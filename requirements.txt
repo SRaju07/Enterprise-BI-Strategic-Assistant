@@ -8,3 +8,4 @@ pydantic
 sentence-transformers
 openai
 ipywidgets
+gunicorn
