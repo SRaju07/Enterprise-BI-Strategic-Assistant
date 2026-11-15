@@ -14,9 +14,22 @@ from sentence_transformers import SentenceTransformer
 # ------------------------------------------------------------------------------
 # 1. PAGE CONFIG & ENVIRONMENT SETUP
 # ------------------------------------------------------------------------------
+MASTEK_LOGO_URL = "https://www.mastek.com/wp-content/uploads/2023/08/Mastek-logo.png"
+
+# Inline SVG of Mastek's 3-diamond emblem (Navy #001E82, Teal #00A5B5, Slate #8E949E)
+# Guarantees crisp rendering even if external URLs are restricted in corporate networks
+MASTEK_EMBLEM_SVG = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#F8FAFC"/>
+  <rect x="20" y="6" width="12" height="12" rx="3" transform="rotate(28 26 12)" fill="#00A5B5"/>
+  <rect x="33" y="21" width="21" height="21" rx="5" transform="rotate(28 43.5 31.5)" fill="#001E82"/>
+  <rect x="24" y="45" width="9" height="9" rx="2.5" transform="rotate(28 28.5 49.5)" fill="#8E949E"/>
+</svg>
+""".strip()
+
 st.set_page_config(
     page_title="Mastek Enterprise BI Assistant",
-    page_icon="🏢",
+    page_icon=MASTEK_EMBLEM_SVG,
     layout="wide",
 )
 
@@ -283,43 +296,53 @@ def ask_mastek_bi_assistant(user_query: str, user_session: UserSession, chat_his
     return reply
 
 # ------------------------------------------------------------------------------
-# 6. STREAMLIT UI
+# 6. STREAMLIT UI (MASTEK BRAND PALETTE & LIVE BRAND ASSETS)
 # ------------------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    /* Main Title Color - Deep Executive Navy */
-    .main-title {
-        color: #0F2C59;
+    /* Mastek Royal Navy Title */
+    .mastek-title {
+        color: #001E82;
         font-size: 2.1rem;
-        font-weight: 700;
-        margin-bottom: 0.15rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.05rem;
     }
-    /* Session Caption Color - Slate Teal */
+    /* Mastek Warm Orange Tagline */
+    .mastek-tagline {
+        color: #E67E22;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.35rem;
+    }
+    /* Mastek Teal Real-Time Session Badge */
     .session-badge {
-        color: #0D9488;
-        font-size: 0.92rem;
-        font-weight: 500;
-        margin-bottom: 1rem;
+        color: #00A5B5;
+        font-size: 0.90rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
     }
-    /* Sidebar Header Color - Corporate Blue */
+    /* Sidebar Header - Mastek Royal Navy */
     [data-testid="stSidebar"] h2 {
-        color: #1E40AF;
+        color: #001E82;
+        font-weight: 700;
     }
-    /* Sidebar Labels Color - Dark Slate */
+    /* Sidebar Labels - Corporate Slate */
     [data-testid="stSidebar"] label {
-        color: #1E293B !important;
+        color: #2C3E50 !important;
         font-weight: 600;
     }
-    /* Assistant Response Headings Color */
+    /* Assistant Response Headings - Mastek Royal Navy */
     [data-testid="stChatMessage"] h1,
     [data-testid="stChatMessage"] h2,
     [data-testid="stChatMessage"] h3 {
-        color: #0F2C59;
+        color: #001E82;
     }
-    /* Assistant Bold Text Highlight */
+    /* Assistant Bold Text Highlight - Mastek Teal */
     [data-testid="stChatMessage"] strong {
-        color: #1D4ED8;
+        color: #008294;
     }
     /* Body Text Color */
     [data-testid="stChatMessage"] p,
@@ -335,6 +358,12 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 with st.sidebar:
+    st.markdown(
+        f'<a href="https://www.mastek.com/" target="_blank">'
+        f'<img src="{MASTEK_LOGO_URL}" width="150" style="margin-bottom: 10px;" '
+        f'onerror="this.style.display=\'none\'"/></a>',
+        unsafe_allow_html=True,
+    )
     st.header("🔐 RBAC & Session Controls")
     roles = [
         "CEO", "COO", "CFO", "CTO", "CMO",
@@ -351,31 +380,42 @@ with st.sidebar:
     )
     rbac_verified = st.checkbox("RBAC Verified", value=True)
 
-# Top Header Bar with Clear Chat Button positioned at top-right (standard chatbot UX)
-header_col, clear_col = st.columns([5, 1], vertical_alignment="center")
-with header_col:
-    st.markdown('<div class="main-title">🏢 Mastek Enterprise BI & Strategic Assistant</div>', unsafe_allow_html=True)
-    st.markdown(
-        f'<div class="session-badge">⚡ Real-Time Session: <b>{selected_role}</b> &nbsp;|&nbsp; '
-        f'Access: <b>{selected_class}</b> &nbsp;|&nbsp; RBAC Verified: <b>{rbac_verified}</b></div>',
-        unsafe_allow_html=True,
-    )
-
-with clear_col:
-    if st.button("🗑️ Clear Chat", use_container_width=True, help="Reset conversation history"):
-        st.session_state.chat_history = []
-        st.rerun()
+# Clean Header Banner (Mastek Official Portal Link + Brand Identity)
+st.markdown(
+    '<div class="mastek-title">'
+    '<a href="https://www.mastek.com/" target="_blank" style="text-decoration:none; color:#001E82;">'
+    'Mastek Enterprise BI & Strategic Assistant</a></div>',
+    unsafe_allow_html=True,
+)
+st.markdown('<div class="mastek-tagline">Trust. Value. Velocity</div>', unsafe_allow_html=True)
+st.markdown(
+    f'<div class="session-badge">● Real-Time Session: <b>{selected_role}</b> &nbsp;|&nbsp; '
+    f'Access: <b>{selected_class}</b> &nbsp;|&nbsp; RBAC Verified: <b>{rbac_verified}</b></div>',
+    unsafe_allow_html=True,
+)
 
 st.divider()
 
+# Avatars: Executive User ("🧑‍💼") & Mastek Brand Emblem SVG
+USER_AVATAR = "🧑‍💼"
+ASSISTANT_AVATAR = MASTEK_EMBLEM_SVG
+
 for msg in st.session_state.chat_history:
-    avatar_icon = "💼" if msg["role"] == "user" else "⚡"
+    avatar_icon = USER_AVATAR if msg["role"] == "user" else ASSISTANT_AVATAR
     with st.chat_message(msg["role"], avatar=avatar_icon):
         st.markdown(msg["content"])
 
+# Relocated Clear Chat Control: Positioned directly above the prompt bar (bottom-right)
+if st.session_state.chat_history:
+    _, action_col = st.columns([5, 1.3])
+    with action_col:
+        if st.button("✨ New Session / Clear", use_container_width=True, help="Clear conversation and start fresh"):
+            st.session_state.chat_history = []
+            st.rerun()
+
 if user_query := st.chat_input("Ask a Mastek business intelligence, financial, or project governance question..."):
     st.session_state.chat_history.append({"role": "user", "content": user_query})
-    with st.chat_message("user", avatar="💼"):
+    with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(user_query)
 
     user_session = UserSession(
@@ -384,7 +424,7 @@ if user_query := st.chat_input("Ask a Mastek business intelligence, financial, o
         rbac_verified=rbac_verified,
     )
 
-    with st.chat_message("assistant", avatar="⚡"):
+    with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
         with st.spinner("Analyzing Mastek real-time intelligence..."):
             reply = ask_mastek_bi_assistant(
                 user_query=user_query,
@@ -394,3 +434,4 @@ if user_query := st.chat_input("Ask a Mastek business intelligence, financial, o
             st.markdown(reply)
 
     st.session_state.chat_history.append({"role": "assistant", "content": reply})
+    st.rerun()
