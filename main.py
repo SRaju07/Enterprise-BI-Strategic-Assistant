@@ -14,8 +14,6 @@ from sentence_transformers import SentenceTransformer
 # ------------------------------------------------------------------------------
 # 1. PAGE CONFIG & ENVIRONMENT SETUP
 # ------------------------------------------------------------------------------
-MASTEK_LOGO_URL = "https://www.mastek.com/wp-content/uploads/2023/08/Mastek-logo.png"
-
 # Inline SVG of Mastek's 3-diamond emblem (Navy #001E82, Teal #00A5B5, Slate #8E949E)
 # Guarantees crisp rendering even if external URLs are restricted in corporate networks
 MASTEK_EMBLEM_SVG = """
@@ -358,12 +356,6 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 with st.sidebar:
-    st.markdown(
-        f'<a href="https://www.mastek.com/" target="_blank">'
-        f'<img src="{MASTEK_LOGO_URL}" width="150" style="margin-bottom: 10px;" '
-        f'onerror="this.style.display=\'none\'"/></a>',
-        unsafe_allow_html=True,
-    )
     st.header("🔐 RBAC & Session Controls")
     roles = [
         "CEO", "COO", "CFO", "CTO", "CMO",
