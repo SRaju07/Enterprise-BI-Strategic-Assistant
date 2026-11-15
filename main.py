@@ -16,7 +16,7 @@ from sentence_transformers import SentenceTransformer
 # ------------------------------------------------------------------------------
 st.set_page_config(
     page_title="Mastek Enterprise BI Assistant",
-    page_icon="📊",
+    page_icon="🏢",
     layout="wide",
 )
 
@@ -285,11 +285,57 @@ def ask_mastek_bi_assistant(user_query: str, user_session: UserSession, chat_his
 # ------------------------------------------------------------------------------
 # 6. STREAMLIT UI
 # ------------------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* Main Title Color - Deep Executive Navy */
+    .main-title {
+        color: #0F2C59;
+        font-size: 2.1rem;
+        font-weight: 700;
+        margin-bottom: 0.15rem;
+    }
+    /* Session Caption Color - Slate Teal */
+    .session-badge {
+        color: #0D9488;
+        font-size: 0.92rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+    /* Sidebar Header Color - Corporate Blue */
+    [data-testid="stSidebar"] h2 {
+        color: #1E40AF;
+    }
+    /* Sidebar Labels Color - Dark Slate */
+    [data-testid="stSidebar"] label {
+        color: #1E293B !important;
+        font-weight: 600;
+    }
+    /* Assistant Response Headings Color */
+    [data-testid="stChatMessage"] h1,
+    [data-testid="stChatMessage"] h2,
+    [data-testid="stChatMessage"] h3 {
+        color: #0F2C59;
+    }
+    /* Assistant Bold Text Highlight */
+    [data-testid="stChatMessage"] strong {
+        color: #1D4ED8;
+    }
+    /* Body Text Color */
+    [data-testid="stChatMessage"] p,
+    [data-testid="stChatMessage"] li {
+        color: #1F2937;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 with st.sidebar:
-    st.header("🛡️ RBAC & Session Controls")
+    st.header("🔐 RBAC & Session Controls")
     roles = [
         "CEO", "COO", "CFO", "CTO", "CMO",
         "Regional Presidents", "Vice Presidents",
@@ -305,26 +351,31 @@ with st.sidebar:
     )
     rbac_verified = st.checkbox("RBAC Verified", value=True)
 
-    st.divider()
-    st.markdown(f"**Model:** `{MODEL}`")
-    st.markdown(f"**Indexed Chunks:** `{len(KNOWLEDGE_CHUNKS)}`")
-    st.markdown("**Scope:** Mastek Domain Only")
-    st.divider()
+# Top Header Bar with Clear Chat Button positioned at top-right (standard chatbot UX)
+header_col, clear_col = st.columns([5, 1], vertical_alignment="center")
+with header_col:
+    st.markdown('<div class="main-title">🏢 Mastek Enterprise BI & Strategic Assistant</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="session-badge">⚡ Real-Time Session: <b>{selected_role}</b> &nbsp;|&nbsp; '
+        f'Access: <b>{selected_class}</b> &nbsp;|&nbsp; RBAC Verified: <b>{rbac_verified}</b></div>',
+        unsafe_allow_html=True,
+    )
 
-    if st.button("🔄 Clear Conversation", use_container_width=True):
+with clear_col:
+    if st.button("🗑️ Clear Chat", use_container_width=True, help="Reset conversation history"):
         st.session_state.chat_history = []
         st.rerun()
 
-st.title("📊 Mastek Enterprise BI & Strategic Assistant")
-st.caption(f"Active Session: **{selected_role}** | `{selected_class}` | `RBAC={rbac_verified}`")
+st.divider()
 
 for msg in st.session_state.chat_history:
-    with st.chat_message(msg["role"]):
+    avatar_icon = "💼" if msg["role"] == "user" else "⚡"
+    with st.chat_message(msg["role"], avatar=avatar_icon):
         st.markdown(msg["content"])
 
 if user_query := st.chat_input("Ask a Mastek business intelligence, financial, or project governance question..."):
     st.session_state.chat_history.append({"role": "user", "content": user_query})
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="💼"):
         st.markdown(user_query)
 
     user_session = UserSession(
@@ -333,8 +384,8 @@ if user_query := st.chat_input("Ask a Mastek business intelligence, financial, o
         rbac_verified=rbac_verified,
     )
 
-    with st.chat_message("assistant"):
-        with st.spinner("Analyzing Mastek knowledge base..."):
+    with st.chat_message("assistant", avatar="⚡"):
+        with st.spinner("Analyzing Mastek real-time intelligence..."):
             reply = ask_mastek_bi_assistant(
                 user_query=user_query,
                 user_session=user_session,
